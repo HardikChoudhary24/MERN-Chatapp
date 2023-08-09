@@ -47,6 +47,18 @@ const signup = () => {
       <Link className="redirect-link" to="/login">
         <button className="signup-redirect">Login</button>
       </Link>
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 };

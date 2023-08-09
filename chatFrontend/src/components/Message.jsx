@@ -1,6 +1,6 @@
 import React from "react";
 
-const Message = () => {
+const Message = ({msg}) => {
   const owner = true;
   return (
     <div
@@ -13,7 +13,7 @@ const Message = () => {
           borderRadius: owner ? "10px 0 10px 10px" : "0 10px 10px 10px",
         }}
       >
-        <p>This is my mssg</p>
+        <p>{msg}</p>
         <span>7:59 am</span>
       </div>
     </div>

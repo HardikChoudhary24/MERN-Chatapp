@@ -18,37 +18,39 @@ const UserProfile = ({ sidebarRef, toggle, openProfile }) => {
   const queryClient = useQueryClient();
   const userPhotoRef = useRef(null);
   const [updateName, setUpdateName] = useState(false);
-  const [name, setName] = useState(localStorage.getItem("name"));
+  const [name, setName] = useState(sessionStorage.getItem("name"));
 
   // to get the userName from the backend
   const { data, isLoading } = useQuery({
     queryKey: ["username"],
-    queryFn: () => fetchData("/getUser",{
-        headers: { Authorization: `Beare ${localStorage.getItem("token")}` },
+    queryFn: () =>
+      fetchData("/getUser", {
+        headers: { Authorization: `Beare ${sessionStorage.getItem("token")}` },
       }),
   });
 
-  if(!isLoading){
-    localStorage.setItem("name", data.data.username);
+  if (!isLoading) {
+    sessionStorage.setItem("name", data.data.username);
   }
 
   //to update the name
-  const { mutate: putName, } = useMutation({
+  const { mutate: putName } = useMutation({
     mutationFn: () => {
       setUpdateName(false);
       return fetchData.patch(
         "/updateUsername",
         {
-          name
+          name,
         },
         {
-          headers: { Authorization: `Beare ${localStorage.getItem("token")}` },
+          headers: {
+            Authorization: `Beare ${sessionStorage.getItem("token")}`,
+          },
         }
       );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["username"] });
-
     },
     onError: (error) => {
       console.log(error);
@@ -67,11 +69,11 @@ const UserProfile = ({ sidebarRef, toggle, openProfile }) => {
       : "0px",
   };
 
-  const logout =()=>{
-    localStorage.removeItem("name");
-    localStorage.removeItem("token");
-    navigate('/login');
-  }
+  const logout = () => {
+    sessionStorage.removeItem("name");
+    sessionStorage.removeItem("token");
+    navigate("/login");
+  };
   return (
     <div className={`user-profile ${toggle ? "revel" : ""}`} style={style}>
       <div className="header">

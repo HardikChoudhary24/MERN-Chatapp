@@ -5,7 +5,7 @@ import {action as loginAction} from "./pages/Login";
 import {action as signupAction} from "./pages/Signup";
 import "react-toastify/dist/ReactToastify.css";
 import PrivateRoute from "./PrivateRoute";
-import MainPage from "./pages/MainPage";
+import MainPage, { loader as allChatsLoader } from "./pages/MainPage";
 
 const router = createBrowserRouter([
   {
@@ -24,6 +24,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/dashboard/:username",
+    loader:allChatsLoader,
     element: <MainPage/>,
   },
 ]);

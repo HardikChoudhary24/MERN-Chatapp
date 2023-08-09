@@ -16,7 +16,7 @@ const PrivateRoute2 = () => {
     queryFn: () => {
       return fetchData("/validate", {
         params: { username },
-        headers: { Authorization: localStorage.getItem("token") },
+        headers: { Authorization: sessionStorage.getItem("token") },
       });
     },
   });
@@ -24,8 +24,8 @@ const PrivateRoute2 = () => {
   if (!isLoading) {
     console.log(data.data);
     if (!data.data) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("name");
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("name");
       return <Navigate to="/login" />;
       // return <MainPage />;
     }

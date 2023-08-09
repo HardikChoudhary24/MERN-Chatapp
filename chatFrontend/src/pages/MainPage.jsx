@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   FaPaperPlane,
   IoIosPerson,
@@ -13,11 +13,18 @@ import {
   Messages,
 } from "../components/index";
 import Search from "../components/Search";
-import { Form } from "react-router-dom";
+import { Form, useLoaderData } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import fetchData from "../utils";
-
+export const loader= async ()=>{
+  const { data } = await fetchData.get("/allChats", {
+    headers: {
+      Authorization: `Beare ${sessionStorage.getItem("token")}`,
+    },
+  });
+  return data.chats;
+}
 const MainPage = () => {
   const sidebarRef = useRef();
   const [toggle, setToggle] = useState(false);
@@ -25,11 +32,12 @@ const MainPage = () => {
   const [searchResult, setSearchResult] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-
+  const data = useLoaderData();
+  const [chats, setChats] = useState(data);
   const openProfile = () => {
     setToggle(!toggle);
     setSearchResult([]);
-    setInputField("")
+    setInputField("");
   };
 
   const searchInput = (e) => {
@@ -49,7 +57,7 @@ const MainPage = () => {
           toSearch: inputField,
         },
         headers: {
-          Authorization: `Beare ${localStorage.getItem("token")}`,
+          Authorization: `Beare ${sessionStorage.getItem("token")}`,
         },
       });
 
@@ -60,6 +68,7 @@ const MainPage = () => {
       setIsLoading(false);
     }
   };
+
   return (
     <div className="main-container">
       <ToastContainer
@@ -104,7 +113,6 @@ const MainPage = () => {
             </button>
           </div>
         </div>
-        {/* <hr className="horizontal-rule" /> */}
 
         <div className="main-content">
           <div className="input">
@@ -123,11 +131,20 @@ const MainPage = () => {
             <p className="status">Searching...</p>
           ) : (
             <>
-              <Search searchResult={searchResult} isError={isError} />
+              <Search
+                searchResult={searchResult}
+                isError={isError}
+                inputField={inputField}
+                // fetchedChats={fetchedChats}
+                setSearchResult={setSearchResult}
+                setChats={setChats}
+              />
             </>
           )}
 
-          <ChatCard />
+          {chats.map((chat) => {
+            return <ChatCard chatName={chat?.name} />;
+          })}
         </div>
       </div>
       <div className="mainbar-cont">

@@ -9,8 +9,8 @@ export const action = async ({ request }) => {
   const data = Object.fromEntries(formData);
   try {
     const res = await fetchData.post("/login", data);
-    localStorage.setItem("name", res?.data?.name);
-    localStorage.setItem("token", res?.data?.token);
+    sessionStorage.setItem("name", res?.data?.name);
+    sessionStorage.setItem("token", res?.data?.token);
     return redirect(`/dashboard/${res.data.name}`);
   } catch (error) {
     toast.error(error?.response?.data?.message);
@@ -52,7 +52,7 @@ const Login = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="dark"
+        theme="light"
       />
     </div>
   );
