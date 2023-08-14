@@ -2,6 +2,7 @@ import React from "react";
 import { Form, Link, redirect } from "react-router-dom";
 import axios from "axios";
 import fetchData from "../utils";
+import { FaPaperPlane, IconContext } from "../assets/icons";
 import { toast, ToastContainer } from "react-toastify";
 
 export const action = async ({ request }) => {
@@ -19,11 +20,20 @@ const signup = () => {
   return (
     <div className="container">
       <Form className="form-container" method="POST">
-        <h2>Welcome Back!</h2>
-        <p>Let's get you signed in</p>
+        <IconContext.Provider
+          value={{
+            color: "#4d61d1",
+            className: "global-class-name logo",
+            size: "90px",
+          }}
+        >
+          <FaPaperPlane />
+        </IconContext.Provider>
+        <h2>Create New Account</h2>
+        <p>Connect and chat with anyone, anywhere</p>
         <input
           type="text"
-          placeholder="Username"
+          placeholder="Display name"
           name="username"
           id="username"
           required
@@ -43,10 +53,15 @@ const signup = () => {
           required
         />
         <button className="login-btn">Sign up</button>
+        <p className="redirect-info">
+          Already have an account?{" "}
+          <span>
+            <Link className="redirect-link" to="/login">
+              <button className="signup-redirect">Login</button>
+            </Link>
+          </span>
+        </p>
       </Form>
-      <Link className="redirect-link" to="/login">
-        <button className="signup-redirect">Login</button>
-      </Link>
       <ToastContainer
         position="top-center"
         autoClose={2000}
@@ -57,7 +72,7 @@ const signup = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="light"
+        theme="dark"
       />
     </div>
   );

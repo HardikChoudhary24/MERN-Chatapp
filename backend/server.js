@@ -5,7 +5,6 @@ const jwt = require("jsonwebtoken");
 const app = express();
 const { createServer } = require("http");
 const { Server } = require("socket.io");
-const { Socket } = require("dgram");
 const httpServer = createServer(app);
 const { v4: uuid } = require("uuid");
 
@@ -31,12 +30,20 @@ const users = [
     userId: "sfsfdhho23bsfafdfsdfdssfssf",
   },
 ];
-const chat = [
+const chats = [
   {
     chatId: "232ihr2ir2bi",
-    chatBtw: [],
+    chatBtw: ["dfafdsafdfdfds", "shho23bsayofyaofudoa"],
     latestmsg: "",
     bothInvolved: false,
+    messageList: [
+      {
+        chatId: "232ihr2ir2bi",
+        sender: "shho23bsayofyaofudoa",
+        content: "hello j",
+        time: "12:59am",
+      },
+    ],
   },
 ];
 // const allmessages = [
@@ -53,9 +60,9 @@ const chat = [
 // ];
 const allMessages = {
   chatId: "232ihr2ir2bi",
-  sender: "shho23bssfssf",
-  content:"hello ji",
-  time:"12:59am"
+  sender: "shho23bsayofyaofudoa",
+  content: "hello ji",
+  time: "12:59am",
 };
 
 const secretKey = "s3cretk3y";
@@ -91,7 +98,7 @@ const userAuthentication = (req, res, next) => {
 
 app.get("/getUser", userAuthentication, (req, res) => {
   const user = users.find((user) => user.email === req.email);
-  res.status(200).json({ username: user.name, email: user.email });
+  res.status(200).json({ username: user.name, email: user.email ,id: user.userId});
 });
 
 app.get("/validate", (req, res) => {
@@ -143,18 +150,13 @@ app.post("/login", (req, res) => {
   }
   res.status(404).json({ message: "user not found" });
 });
-
+//hadf
 app.post("/newChat", userAuthentication, (req, res) => {
   const { reciveremail } = req.headers;
   const reciver = users.find((user) => reciveremail === user.email);
   const sender = users.find((user) => req.email === user.email);
   if (reciver) {
-    // let allchats = chat.filter((ch) =>
-    //   ch.bothInvolved
-    //     ? ch.chatBtw.includes(sender.userId)
-    //     : ch.chatBtw[1] === sender.userId
-    // );
-    const chatExist = chat.find(
+    const chatExist = chats.find(
       (ch) =>
         ch.chatBtw.includes(reciver.userId) &&
         ch.chatBtw.includes(sender.userId)
@@ -162,14 +164,15 @@ app.post("/newChat", userAuthentication, (req, res) => {
     if (chatExist) {
       chatExist.bothInvolved = true;
     } else {
-      chat.push({
+      chats.push({
         chatId: uuid(),
         chatBtw: [reciver.userId, sender.userId],
         latestmsg: "",
         bothInvolved: false,
+        messageList:[],
       });
     }
-    const allchats = chat.filter((ch) =>
+    const allchats = chats.filter((ch) =>
       ch.bothInvolved
         ? ch.chatBtw.includes(sender.userId)
         : ch.chatBtw[1] === sender.userId
@@ -180,13 +183,14 @@ app.post("/newChat", userAuthentication, (req, res) => {
       }
       return users.find((user) => user.userId === chat.chatBtw[0]);
     });
+    console.log(chatCardDetails)
     return res.status(200).json({ chats: chatCardDetails });
   }
   res.status(400).json({ message: "failed" });
 });
 app.get("/allChats", userAuthentication, (req, res) => {
   const user = users.find((user) => req.email === user.email);
-  const allchats = chat.filter((ch) =>
+  const allchats = chats.filter((ch) =>
     ch.bothInvolved
       ? ch.chatBtw.includes(user.userId)
       : ch.chatBtw[1] === user.userId
@@ -200,6 +204,14 @@ app.get("/allChats", userAuthentication, (req, res) => {
   return res.status(200).json({ chats: chatCardDetails });
 });
 
+
+app.get("/messages", userAuthentication, (req,res)=>{
+  const {person, author} = req.headers;
+  const chat = chats.find((chat)=> chat.chatBtw.includes(person)&& chat.chatBtw.includes(author));
+  res.status(200).json({chat: chat});
+});
+
+
 // socketio setup
 const io = new Server(httpServer, {
   cors: {
@@ -208,8 +220,22 @@ const io = new Server(httpServer, {
   },
 });
 
+
 io.on("connection", (socket) => {
-  
+  console.log(socket.id);
+  socket.on("join_room" , (data)=>{
+    socket.join(data);
+    console.log(`User Id : ${socket.id} joined room : ${data}`);
+  })
+  socket.on("send_msg",(data)=>{
+    console.log(data);
+    chats.map((chat)=>{
+      if(chat.chatId===data.chatId){
+        chat.messageList.push(data);
+      }
+    })
+    socket.to(data.chatId).emit("receive_msg",data);
+  })
   socket.on("disconnect" , ()=>{
     console.log("user disconnected")
   })

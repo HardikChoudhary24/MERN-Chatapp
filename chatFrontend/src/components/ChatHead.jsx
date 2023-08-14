@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import imgdp from "../assets/profile.jpg";
 import DeleteChat from "./DeleteChat";
 
-const ChatHead = () => {
+const ChatHead = ({chatPerson}) => {
   const deleteModalRef = useRef(null);  
   const [modalState,setModalState ] = useState(false)
   const openModal =()=>{
@@ -12,8 +12,8 @@ const ChatHead = () => {
     <div className="mainbar-header">
       <img src={imgdp} alt="" />
       <div className="chat-info">
-        <p className="chat-person-name">Hardik choudhary</p>
-        <p className="chat-person-email">hardik102@gmail.com</p>
+        <p className="chat-person-name">{chatPerson.name}</p>
+        <p className="chat-person-email">{chatPerson.email}</p>
       </div>
       <button className="more-info" onClick={openModal}>
         <div className="circle"></div>

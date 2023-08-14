@@ -2,7 +2,7 @@ import React from "react";
 import imgdp from "../assets/profile.jpg";
 import fetchData from "../utils";
 
-const SearchedUser = ({ res, setChats, setSearchResult }) => {
+const SearchedUser = ({ res, setChats, setSearchResult, setInputField }) => {
   const fetchedChats = async (reciver) => {
     setChats([]);
     try {
@@ -14,6 +14,7 @@ const SearchedUser = ({ res, setChats, setSearchResult }) => {
       });
       setChats(data.chats);
       setSearchResult([]);
+      setInputField("");
     } catch (error) {
       console.log(error);
     }

@@ -3,6 +3,8 @@ import { Form, Link, redirect } from "react-router-dom";
 import fetchData from "../utils";
 import { toast, ToastContainer } from "react-toastify";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { FaPaperPlane, IconContext } from "../assets/icons";
+
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
@@ -21,8 +23,17 @@ const Login = () => {
   return (
     <div className="container">
       <Form className="form-container" method="POST">
-        <h2>Welcome Back!</h2>
-        <p>Let's get you signed in</p>
+        <IconContext.Provider
+          value={{
+            color: "#4d61d1",
+            className: "global-class-name logo",
+            size: "90px",
+          }}
+        >
+          <FaPaperPlane />
+        </IconContext.Provider>
+        <h2>Login to your Account</h2>
+        <p>Connect and chat with anyone, anywhere</p>
         <input
           type="email"
           placeholder="Email"
@@ -37,11 +48,17 @@ const Login = () => {
           id="password"
           required
         />
-        <button className="login-btn">Login</button>
+        <button className="login-btn">Login to Your Account</button>
+        <p className="redirect-info">
+          Not a member yet?{" "}
+          <span>
+            <Link className="redirect-link" to="/signup">
+              <button className="signup-redirect">Register Now</button>
+            </Link>
+          </span>
+        </p>
       </Form>
-      <Link className="redirect-link" to="/signup">
-        <button className="signup-redirect">Sign up</button>
-      </Link>
+
       <ToastContainer
         position="top-center"
         autoClose={2000}
@@ -52,7 +69,7 @@ const Login = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="light"
+        theme="dark"
       />
     </div>
   );

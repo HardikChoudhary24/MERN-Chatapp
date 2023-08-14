@@ -17,14 +17,22 @@ import { Form, useLoaderData } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import fetchData from "../utils";
-export const loader= async ()=>{
+import NoChats from "../components/NoChats";
+import { useQueryClient } from "@tanstack/react-query";
+import { io } from "socket.io-client";
+
+
+
+export const loader = async () => {
   const { data } = await fetchData.get("/allChats", {
     headers: {
       Authorization: `Beare ${sessionStorage.getItem("token")}`,
     },
   });
   return data.chats;
-}
+};
+
+let socket;
 const MainPage = () => {
   const sidebarRef = useRef();
   const [toggle, setToggle] = useState(false);
@@ -34,6 +42,10 @@ const MainPage = () => {
   const [isError, setIsError] = useState(false);
   const data = useLoaderData();
   const [chats, setChats] = useState(data);
+  const [chatPerson, setChatPerson] = useState(null);
+  const [room, setRoom] = useState(null);
+  const queryClient = useQueryClient();
+  
   const openProfile = () => {
     setToggle(!toggle);
     setSearchResult([]);
@@ -69,6 +81,18 @@ const MainPage = () => {
     }
   };
 
+  
+  useEffect(() => {
+    socket = io("http://localhost:3000"); 
+    // Set up event listeners and any other socket logic here
+    return () => {
+      socket.disconnect(); // Clean up the socket connection when the component unmounts
+    };
+  }, []);
+  const openChats = async (chat) => {
+    setChatPerson(chat);
+    await queryClient.invalidateQueries({ queryKey: ["messages"] });
+  };
   return (
     <div className="main-container">
       <ToastContainer
@@ -81,7 +105,7 @@ const MainPage = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="light"
+        theme="dark"
       />
       <UserProfile
         sidebarRef={sidebarRef}
@@ -104,7 +128,7 @@ const MainPage = () => {
               <IconContext.Provider
                 value={{
                   color: "#4d61d1",
-                  className: "global-class-name",
+                  className: "global-class-name person",
                   size: "20px",
                 }}
               >
@@ -138,19 +162,35 @@ const MainPage = () => {
                 // fetchedChats={fetchedChats}
                 setSearchResult={setSearchResult}
                 setChats={setChats}
+                setInputField={setInputField}
               />
             </>
           )}
 
           {chats.map((chat) => {
-            return <ChatCard chatName={chat?.name} />;
+            return (
+              <ChatCard
+                chatName={chat?.name}
+                chat={chat}
+                openChats={openChats}
+              />
+            );
           })}
         </div>
       </div>
       <div className="mainbar-cont">
-        <ChatHead />
+        {/* <ChatHead />
         <Messages />
-        <Input />
+        <Input /> */}
+        {chatPerson !== null ? (
+          <>
+            <ChatHead chatPerson={chatPerson} />
+            <Messages chatPerson={chatPerson} socket={socket} setRoom={setRoom} />
+            <Input room={room} socket={socket} />
+          </>
+        ) : (
+          <NoChats />
+        )}
       </div>
     </div>
   );

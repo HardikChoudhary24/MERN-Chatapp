@@ -3,7 +3,7 @@ import SearchedUser from "./SearchedUser";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import fetchData from "../utils";
 
-const Search = ({ searchResult, isError, setChats, setSearchResult }) => {
+const Search = ({ searchResult, isError, setChats, setSearchResult ,setInputField}) => {
   if (isError) {
     return (
       <>
@@ -22,6 +22,7 @@ const Search = ({ searchResult, isError, setChats, setSearchResult }) => {
           // fetchedChats={fetchedChats}
           setSearchResult={setSearchResult}
           setChats={setChats}
+          setInputField={setInputField}
         />
       ))}
       {searchResult.length !== 0 && (

@@ -1,20 +1,21 @@
 import React from "react";
 
 const Message = ({msg}) => {
-  const owner = true;
+  const authorId = sessionStorage.getItem("id");
+  const owner = msg?.sender === authorId? true:false;
   return (
     <div
       className="message-row"
       style={{ justifyContent: owner ? "flex-end" : "flex-start" }}
     >
       <div
-        className="message-container"
+        className={owner ? "message-container owner" : "message-container"}
         style={{
           borderRadius: owner ? "10px 0 10px 10px" : "0 10px 10px 10px",
         }}
       >
-        <p>{msg}</p>
-        <span>7:59 am</span>
+        <p>{msg.content}</p>
+        <span>{msg.time}</span>
       </div>
     </div>
   );

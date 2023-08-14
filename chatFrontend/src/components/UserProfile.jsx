@@ -31,6 +31,7 @@ const UserProfile = ({ sidebarRef, toggle, openProfile }) => {
 
   if (!isLoading) {
     sessionStorage.setItem("name", data.data.username);
+    sessionStorage.setItem("id", data.data.id);
   }
 
   //to update the name
@@ -67,6 +68,9 @@ const UserProfile = ({ sidebarRef, toggle, openProfile }) => {
     width: toggle
       ? `${userPhotoRef.current.getBoundingClientRect().width}px`
       : "0px",
+    borderRight: toggle
+      ? "1px solid #4d61d1"
+      : "",
   };
 
   const logout = () => {
@@ -128,7 +132,7 @@ const UserProfile = ({ sidebarRef, toggle, openProfile }) => {
             <button className="edit-btn" onClick={changeEditState}>
               <IconContext.Provider
                 value={{
-                  color: "#7b7b7d",
+                  color: "white",
                   className: "global-class-name",
                   size: "20px",
                 }}
